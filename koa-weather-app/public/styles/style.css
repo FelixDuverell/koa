@@ -2,34 +2,31 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #1313c5;
+  background-color: #aaaaaa;
   margin: 0;
   padding: 0;
 }
 
 h1 {
-  color: #ed0000;
   text-align: center;
+  color: #333;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  padding: 5px;
-  margin: 2px;
-}
-
-a {
-  display: block;
+form {
   text-align: center;
   margin-top: 20px;
-  text-decoration: none;
-  color: #007bff;
 }
 
-a:hover {
-  color: #0056b3;
+input[type="text"] {
+  padding: 10px;
+  border: 1px solid black;
+  margin-right: -5px;
+}
+
+button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: 1px solid black;
+  cursor: pointer;
 }

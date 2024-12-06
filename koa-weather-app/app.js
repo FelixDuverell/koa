@@ -1,25 +1,29 @@
 const Koa = require("koa")
-const Router = require("@koa/router")
-const koaStatic = require("koa-static")
 const path = require("path")
+const views = require("koa-views")
+const static = require("koa-static")
 const bodyParser = require("koa-bodyparser")
-const forecastRouter = require("./routers/forecast.router")
-const rootRouter = require("./routers/root.router")
+const router = require("./routers")
 
 const app = new Koa()
-const router = new Router()
-
-// Serve static files from the 'public' folder
-app.use(koaStatic(path.join(__dirname, "public")))
-
-// Routes
-router.use("/", rootRouter.routes())
-router.use("/forecast", forecastRouter.routes())
-
-app.use(bodyParser())
-app.use(router.routes()).use(router.allowedMethods())
-
 const PORT = process.env.PORT || 3000
+
+// set view engine
+app.use(
+  views(path.resolve(__dirname, "views"), {
+    extension: "ejs",
+  })
+)
+
+// use middleware
+app.use(bodyParser())
+app.use(static(path.resolve(__dirname, "public")))
+
+// routes
+app.use(router.routes())
+app.use(router.allowedMethods())
+
+// server running
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`)
+  console.log(`App running on port ${PORT}`)
 })

@@ -1,67 +1,46 @@
 const axios = require("axios")
-require("dotenv").config()
-
-const WEATHER_API_KEY = process.env.OPENCAGE_API_KEY
 
 const getWeather = async ctx => {
   const city = ctx.query.q
 
-  if (!city) {
-    ctx.body = `
-      <!DOCTYPE html>
-      <html>
-        <body>
-          <h1>Error</h1>
-          <p>City is required!</p>
-          <a href="/">Go back</a>
-        </body>
-      </html>
-    `
-    return
-  }
-
   try {
-    const response = await axios.get(
-      `https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m`,
-      {
-        params: {
-          q: city,
-          appid: WEATHER_API_KEY,
-          units: "metric",
-        },
+    if (!city) {
+      ctx.status = 400
+      ctx.body = { msg: "Invalid query" }
+    } else {
+      const geocodeData = await getGeocodeData(city)
+
+      if (geocodeData.results.length === 0) {
+        ctx.status = 404
+        ctx.body = { msg: "No data found" }
+      } else {
+        const { lat, lng } = geocodeData.results[0].geometry
+        const weatherData = await getWeatherData(lat, lng)
+
+        await ctx.render("forecast", { weatherData, geocodeData })
       }
-    )
-
-    const data = response.data
-
-    ctx.body = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Weather Forecast</title>
-        </head>
-        <body>
-          <h1>Weather in ${data.name}</h1>
-          <p>Temperature: ${data.main.temp}°C</p>
-          <p>Weather: ${data.weather[0].description}</p>
-          <p>Humidity: ${data.main.humidity}%</p>
-          <p>Wind Speed: ${data.wind.speed} m/s</p>
-          <a href="/">Search another city</a>
-        </body>
-      </html>
-    `
+    }
   } catch (error) {
-    ctx.body = `
-      <!DOCTYPE html>
-      <html>
-        <body>
-          <h1>Error</h1>
-          <p>Could not fetch weather for "${city}". Please try again.</p>
-          <a href="/">Go back</a>
-        </body>
-      </html>
-    `
+    ctx.status = 500
+    ctx.body = { msg: error.message }
   }
+}
+
+const getGeocodeData = async city => {
+  const { OPENCAGE_API_KEY } = require("../config/secrets")
+
+  const response = await axios.get(
+    `https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${OPENCAGE_API_KEY}&pretty=1`
+  )
+
+  return response.data
+}
+
+const getWeatherData = async (lat, lng) => {
+  const OPENMETEO_URL = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,windspeed_10m,winddirection_10m&hourly=temperature_2m&timezone=auto`
+  const response = await axios.get(OPENMETEO_URL)
+
+  return response.data
 }
 
 module.exports = { getWeather }
