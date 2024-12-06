@@ -30,7 +30,7 @@ const getGeocodeData = async city => {
   const { OPENCAGE_API_KEY } = require("../config/secrets")
 
   const response = await axios.get(
-    `https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${OPENCAGE_API_KEY}&pretty=1`
+    `https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${`0a42525f979b473da4309700cbe6c036&q`}&pretty=1`
   )
 
   return response.data

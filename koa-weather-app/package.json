@@ -1,7 +1,7 @@
 {
   "name": "koa-weather-app",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,8 +13,11 @@
     "@koa/router": "^13.1.0",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
     "koa": "^2.15.3",
     "koa-bodyparser": "^4.4.1",
-    "koa-static": "^5.0.0"
+    "koa-router": "^13.0.1",
+    "koa-static": "^5.0.0",
+    "koa-views": "^8.1.0"
   }
 }
